@@ -939,6 +939,32 @@
         }
     </style>
 </head>
+    <script>
+        const observerOptions = {
+            threshold: 0.15, // 요소가 15% 보일 때 실행
+            rootMargin: '0px 0px -80px 0px' // 화면 하단에서 80px 위 지점을 기준으로 미리 로드
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                // entry.isIntersecting이 true이면 요소가 화면에 보인다는 뜻
+                if (entry.isIntersecting) {
+                    // 'visible' 클래스를 추가하여 CSS 애니메이션 실행
+                    entry.target.classList.add('visible');
+                    // 애니메이션은 한 번만 실행하면 되므로 관찰 중지
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        // 관찰할 모든 대상을 선택 (정보 카드, 타임라인 아이템, 드레스코드 카드)
+        const elementsToAnimate = document.querySelectorAll('.info-card, .timeline-item, .dresscode-card');
+        
+        // 각 요소를 관찰 시작
+        elementsToAnimate.forEach(el => {
+            observer.observe(el);
+        });
+    </script>
 <body>
     <div class="film-slate">
         <div class="slate-text">MULTY PLAY</div>
