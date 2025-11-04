@@ -1,1099 +1,1080 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multy Play 2025</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:wght@400;500;600;700;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Cormorant Garamond', serif;
-            background: #000;
-            color: #fff;
-            overflow-x: hidden;
-            width: 100%;
-            position: relative;
-        }
-
-        /* Film Slate Opening */
-        .film-slate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 20000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: slateDisappear 0.8s ease-out 2.5s forwards;
-        }
-
-        .slate-text {
-            font-family: 'Courier New', monospace;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
-            color: #fff;
-            letter-spacing: 12px;
-            margin: 15px 0;
-            opacity: 0;
-            animation: typeIn 0.6s ease 0.3s forwards;
-        }
-
-        .slate-text:nth-child(2) {
-            animation-delay: 1s;
-        }
-
-        .slate-line {
-            width: 250px;
-            height: 2px;
-            background: #fff;
-            margin: 25px 0;
-            transform: scaleX(0);
-            animation: lineExpand 0.5s ease 1.8s forwards;
-        }
-
-        @keyframes typeIn {
-            to { opacity: 1; }
-        }
-
-        @keyframes lineExpand {
-            to { transform: scaleX(1); }
-        }
-
-        @keyframes slateDisappear {
-            to { opacity: 0; pointer-events: none; }
-        }
-
-        /* Film Grain */
-        .grain {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="6" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.06"/></svg>');
-            pointer-events: none;
-            z-index: 10000;
-            animation: grain 6s steps(10) infinite;
-            mix-blend-mode: overlay;
-        }
-
-        @keyframes grain {
-            0%, 100% { transform: translate(0, 0); }
-            20% { transform: translate(-3%, -8%); }
-            40% { transform: translate(5%, -12%); }
-            60% { transform: translate(-7%, 10%); }
-            80% { transform: translate(8%, -5%); }
-        }
-
-        /* Bokeh */
-        .bokeh {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .bokeh-circle {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: 0.3;
-            animation: float 30s infinite ease-in-out;
-        }
-
-        .bokeh-circle:nth-child(1) {
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, rgba(120, 100, 200, 0.6), transparent);
-            top: 10%;
-            left: 5%;
-        }
-
-        .bokeh-circle:nth-child(2) {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(140, 120, 220, 0.5), transparent);
-            top: 60%;
-            right: 10%;
-            animation-delay: 5s;
-        }
-
-        .bokeh-circle:nth-child(3) {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(160, 140, 240, 0.4), transparent);
-            bottom: 20%;
-            left: 15%;
-            animation-delay: 10s;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(50px, -50px) scale(1.2); }
-            66% { transform: translate(-40px, 40px) scale(0.9); }
-        }
-
-        /* Light Beam */
-        .light-beam {
-            position: fixed;
-            top: -50%;
-            left: -10%;
-            width: 120%;
-            height: 200%;
-            background: linear-gradient(55deg, 
-                transparent 42%,
-                rgba(180, 160, 255, 0.2) 46%,
-                rgba(200, 180, 255, 0.35) 50%,
-                rgba(180, 160, 255, 0.2) 54%,
-                transparent 58%);
-            pointer-events: none;
-            z-index: 5;
-            animation: beam 5s ease-in-out 1.5s;
-            opacity: 0;
-        }
-
-        @keyframes beam {
-            0% { transform: translateX(-120%) rotate(55deg); opacity: 0; }
-            40% { opacity: 1; }
-            100% { transform: translateX(120%) rotate(55deg); opacity: 0; }
-        }
-
-        .flare {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(180, 160, 255, 0.15) 0%, transparent 45%),
-                radial-gradient(ellipse at 80% 80%, rgba(160, 140, 235, 0.12) 0%, transparent 45%);
-            pointer-events: none;
-            z-index: 2;
-            animation: flareBreath 12s ease-in-out infinite;
-        }
-
-        @keyframes flareBreath {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-
-        /* Scanlines */
-        .scanlines {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 2px);
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.3;
-        }
-
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            z-index: 3;
-            width: 100%;
-        }
-
-        .hero-content {
-            text-align: center;
-            max-width: 1200px;
-            width: 100%;
-            position: relative;
-            z-index: 4;
-            padding: 0 20px;
-        }
-
-        .year {
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 20px;
-            color: rgba(180, 160, 255, 0.5);
-            margin-bottom: 40px;
-            animation: fadeInUp 1.4s ease forwards, glitch 4s infinite;
-        }
-
-        @keyframes glitch {
-            0%, 90%, 100% { transform: translate(0); }
-            92% { transform: translate(-2px, 1px); }
-            94% { transform: translate(2px, -1px); }
-        }
-
-        .main-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(4rem, 15vw, 12rem);
-            font-weight: 900;
-            line-height: 0.9;
-            margin: 50px auto;
-            background: linear-gradient(180deg, #fff 0%, #e8e0ff 40%, #c8b8ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: clamp(8px, 1.8vw, 16px);
-            animation: titleReveal 1.5s ease forwards 0.5s, titleFloat 6s ease-in-out infinite 3s;
-            opacity: 0;
-            filter: drop-shadow(0 20px 60px rgba(180, 160, 255, 0.8));
-            text-transform: uppercase;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: none;
-        }
-
-        @keyframes titleReveal {
-            from { opacity: 0; transform: translateY(60px) scale(0.9); filter: blur(10px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
-        @keyframes titleFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .subtitle {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(1.2rem, 4vw, 3rem);
-            font-weight: 400;
-            letter-spacing: clamp(4px, 1vw, 10px);
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 25px;
-            animation: fadeInUp 1.4s ease forwards 1s, shimmer 4s ease-in-out infinite 3s;
-            opacity: 0;
-            padding: 0 15px;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            text-align: center;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { text-shadow: 0 0 20px rgba(180, 160, 255, 0.3); }
-            50% { text-shadow: 0 0 30px rgba(180, 160, 255, 0.6); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .theme {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            letter-spacing: 16px;
-            color: rgba(180, 160, 255, 0.8);
-            margin-top: 40px;
-            animation: fadeInUp 1.4s ease forwards 1.4s, pulse 3s ease-in-out infinite 3.5s;
-            opacity: 0;
-            text-transform: uppercase;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
-        }
-
-        .divider-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            margin: 60px 0;
-            animation: fadeInUp 1.4s ease forwards 1.8s;
-            opacity: 0;
-        }
-
-        .divider {
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(180, 160, 255, 0.6), transparent);
-            animation: expand 2s ease-out 2.2s;
-            transform: scaleX(0);
-        }
-
-        @keyframes expand {
-            to { transform: scaleX(1); }
-        }
-
-        .star {
-            color: rgba(180, 160, 255, 0.8);
-            font-size: 1.8rem;
-            animation: twinkle 2s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.6; transform: scale(1) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
-        }
-
-        .info-section {
-            padding: 140px 40px;
-            z-index: 3;
-            position: relative;
-        }
-
-        .info-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 60px;
-        }
-
-        .info-card {
-            padding: 70px 50px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(180, 160, 255, 0.15);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(80px);
-        }
-
-        .info-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .info-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.8s ease;
-        }
-
-        .info-card:hover::after {
-            left: 100%;
-        }
-
-        .info-card:hover {
-            transform: translateY(-20px);
-            border-color: rgba(180, 160, 255, 0.4);
-            box-shadow: 0 30px 80px rgba(180, 160, 255, 0.3);
-        }
-
-        .info-label {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            letter-spacing: 6px;
-            color: rgba(180, 160, 255, 0.7);
-            margin-bottom: 25px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .info-value {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.7rem;
-            line-height: 2;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .info-value strong {
-            font-weight: 700;
-            color: #fff;
-            font-size: 1.9rem;
-        }
-
-        .schedule-section {
-            padding: 140px 40px;
-            z-index: 3;
-            position: relative;
-        }
-
-        .section-title {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            text-align: center;
-            letter-spacing: clamp(6px, 1.4vw, 14px);
-            margin-bottom: 120px;
-            background: linear-gradient(180deg, #fff 0%, #c8b8ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            text-transform: uppercase;
-            padding: 0 20px;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        .timeline {
-            max-width: 1100px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(180deg, transparent, rgba(180, 160, 255, 0.5), transparent);
-            transform: translateX(-50%);
-            box-shadow: 0 0 20px rgba(180, 160, 255, 0.4);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin: 70px 0;
-            display: flex;
-            align-items: center;
-            opacity: 0;
-            transform: translateY(80px);
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .timeline-item:nth-child(odd) {
-            flex-direction: row-reverse;
-        }
-
-        .timeline-content {
-            width: 45%;
-            padding: 45px 50px;
-            background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(40px);
-            border: 1px solid rgba(180, 160, 255, 0.15);
-            transition: all 0.6s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .timeline-content:hover {
-            border-color: rgba(180, 160, 255, 0.4);
-            box-shadow: 0 20px 60px rgba(180, 160, 255, 0.3);
-            transform: scale(1.08) translateX(10px);
-        }
-
-        .timeline-item:nth-child(odd) .timeline-content:hover {
-            transform: scale(1.08) translateX(-10px);
-        }
-
-        .timeline-time {
-            font-family: 'Cinzel', serif;
-            font-size: 1.5rem;
-            color: rgba(180, 160, 255, 0.9);
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .timeline-text {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.4rem;
-            line-height: 2;
-            color: rgba(255, 255, 255, 0.85);
-            font-weight: 500;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            width: 22px;
-            height: 22px;
-            background: rgba(180, 160, 255, 0.95);
-            border: 6px solid #000;
-            border-radius: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 40px rgba(180, 160, 255, 1);
-            z-index: 2;
-            animation: dotPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-            0%, 100% { box-shadow: 0 0 40px rgba(180, 160, 255, 1); }
-            50% { box-shadow: 0 0 60px rgba(180, 160, 255, 1), 0 0 80px rgba(180, 160, 255, 0.5); }
-        }
-
-        .dresscode-section {
-            padding: 140px 40px;
-            z-index: 3;
-            position: relative;
-        }
-
-        .dresscode-card {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 90px 70px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(50px);
-            border: 2px solid rgba(180, 160, 255, 0.3);
-            position: relative;
-            overflow: hidden;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(80px);
-            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dresscode-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .dresscode-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(180, 160, 255, 0.1), transparent);
-            animation: shine 6s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .dresscode-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .dresscode-title {
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            letter-spacing: 10px;
-            color: rgba(180, 160, 255, 0.7);
-            margin-bottom: 35px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .dresscode-text {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 900;
-            letter-spacing: 10px;
-            background: linear-gradient(180deg, #fff 0%, #c8b8ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            animation: textGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { filter: drop-shadow(0 0 20px rgba(180, 160, 255, 0.5)); }
-            50% { filter: drop-shadow(0 0 40px rgba(180, 160, 255, 0.8)); }
-        }
-
-        .footer {
-            padding: 120px 40px 70px;
-            text-align: center;
-            z-index: 3;
-            position: relative;
-            border-top: 1px solid rgba(180, 160, 255, 0.2);
-        }
-
-        .credits {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .credit-item {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            padding: 0 20px;
-            max-width: 100%;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            line-height: 1.8;
-        }
-
-        .credit-item strong {
-            color: rgba(180, 160, 255, 0.7);
-            font-weight: 700;
-        }
-
-        @media (max-width: 768px) {
-            .slate-text {
-                font-size: clamp(1.2rem, 5vw, 2rem);
-                letter-spacing: 6px;
-                padding: 0 20px;
-                text-align: center;
-            }
-
-            .slate-line {
-                width: 160px;
-            }
-
-            .main-title {
-                font-size: clamp(3.5rem, 13vw, 6rem);
-                letter-spacing: clamp(5px, 1.2vw, 10px);
-                margin: 30px auto;
-                line-height: 0.95;
-                padding: 0 10px;
-            }
-            
-            .subtitle {
-                font-size: clamp(1.1rem, 3.8vw, 1.8rem);
-                letter-spacing: clamp(3px, 0.7vw, 6px);
-                padding: 0 25px;
-            }
-
-            .year {
-                font-size: 1rem;
-                letter-spacing: clamp(10px, 2.5vw, 16px);
-            }
-
-            .theme {
-                font-size: 1.3rem;
-                letter-spacing: clamp(8px, 2vw, 14px);
-            }
-
-            .section-title {
-                font-size: clamp(1.8rem, 7vw, 2.8rem);
-                letter-spacing: clamp(3px, 0.8vw, 8px);
-                margin-bottom: 70px;
-                padding: 0 25px;
-            }
-
-            .dresscode-text {
-                font-size: clamp(1.8rem, 6.5vw, 3.2rem);
-                letter-spacing: clamp(3px, 0.6vw, 7px);
-            }
-
-            .dresscode-title {
-                font-size: 0.95rem;
-                letter-spacing: clamp(4px, 0.8vw, 7px);
-            }
-
-            .credit-item {
-                font-size: clamp(0.75rem, 2.4vw, 0.9rem);
-                letter-spacing: clamp(1px, 0.4vw, 3px);
-                padding: 0 25px;
-                word-break: keep-all;
-                line-height: 1.7;
-            }
-
-            .info-grid {
-                grid-template-columns: 1fr;
-                gap: 45px;
-                padding: 0 20px;
-            }
-
-            .info-card {
-                padding: 45px 30px;
-            }
-
-            .info-label {
-                font-size: 0.85rem;
-                letter-spacing: 4px;
-            }
-
-            .info-value {
-                font-size: 1.35rem;
-            }
-
-            .info-value strong {
-                font-size: 1.45rem;
-            }
-            
-            .timeline::before {
-                left: 25px;
-            }
-            
-            .timeline-item {
-                flex-direction: column !important;
-                align-items: flex-start;
-                padding-left: 60px;
-                margin: 45px 0;
-            }
-            
-            .timeline-content {
-                width: 100%;
-                padding: 32px 25px;
-            }
-
-            .timeline-time {
-                font-size: 1.2rem;
-                letter-spacing: 1px;
-            }
-
-            .timeline-text {
-                font-size: 1.15rem;
-            }
-            
-            .timeline-dot {
-                left: 25px;
-                width: 15px;
-                height: 15px;
-                border: 5px solid #000;
-            }
-            
-            .dresscode-card {
-                padding: 55px 25px;
-            }
-
-            .hero {
-                padding: 60px 15px;
-                min-height: 90vh;
-            }
-
-            .divider-container {
-                gap: 18px;
-                margin: 40px auto;
-                width: fit-content;
-            }
-
-            .divider {
-                width: 55px;
-            }
-
-            .star {
-                font-size: 1.3rem;
-            }
-
-            .info-section, .schedule-section, .dresscode-section {
-                padding: 90px 20px;
-            }
-
-            .footer {
-                padding: 70px 20px 45px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .slate-text {
-                font-size: clamp(1rem, 4.2vw, 1.4rem);
-                letter-spacing: 4px;
-                padding: 0 15px;
-            }
-
-            .slate-line {
-                width: 120px;
-            }
-
-            .main-title {
-                font-size: clamp(2.8rem, 11vw, 4.5rem);
-                letter-spacing: clamp(3px, 0.8vw, 6px);
-                margin: 25px auto;
-                padding: 0 10px;
-            }
-
-            .subtitle {
-                font-size: clamp(0.95rem, 3.2vw, 1.4rem);
-                letter-spacing: clamp(2px, 0.5vw, 4px);
-                padding: 0 20px;
-            }
-
-            .year {
-                font-size: 0.9rem;
-                letter-spacing: clamp(8px, 2.2vw, 12px);
-                margin-bottom: 30px;
-            }
-
-            .theme {
-                font-size: 1.1rem;
-                letter-spacing: clamp(7px, 1.8vw, 12px);
-            }
-
-            .section-title {
-                font-size: clamp(1.6rem, 6.5vw, 2.3rem);
-                letter-spacing: clamp(2px, 0.6vw, 6px);
-                margin-bottom: 55px;
-                padding: 0 20px;
-            }
-
-            .info-card {
-                padding: 38px 22px;
-            }
-
-            .info-label {
-                font-size: 0.8rem;
-                letter-spacing: 3px;
-            }
-
-            .info-value {
-                font-size: 1.2rem;
-            }
-
-            .info-value strong {
-                font-size: 1.3rem;
-            }
-
-            .timeline-item {
-                padding-left: 52px;
-                margin: 38px 0;
-            }
-
-            .timeline-content {
-                padding: 28px 18px;
-            }
-
-            .timeline-time {
-                font-size: 1rem;
-                letter-spacing: 0.5px;
-            }
-
-            .timeline-text {
-                font-size: 1.05rem;
-            }
-
-            .timeline-dot {
-                width: 13px;
-                height: 13px;
-                border: 4px solid #000;
-            }
-
-            .dresscode-card {
-                padding: 48px 18px;
-            }
-
-            .dresscode-title {
-                font-size: 0.85rem;
-                letter-spacing: clamp(3px, 0.7vw, 5px);
-                margin-bottom: 22px;
-            }
-
-            .dresscode-text {
-                font-size: clamp(1.6rem, 6vw, 2.5rem);
-                letter-spacing: clamp(2px, 0.5vw, 5px);
-            }
-
-            .credit-item {
-                font-size: clamp(0.7rem, 2.2vw, 0.8rem);
-                letter-spacing: clamp(0.5px, 0.3vw, 2px);
-                padding: 0 18px;
-            }
-
-            .divider {
-                width: 45px;
-            }
-
-            .star {
-                font-size: 1.1rem;
-            }
-
-            .hero {
-                padding: 50px 15px;
-            }
-
-            .info-section, .schedule-section, .dresscode-section {
-                padding: 75px 15px;
-            }
-
-            .footer {
-                padding: 65px 15px 38px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .main-title {
-                font-size: clamp(2rem, 9.5vw, 3rem);
-                letter-spacing: clamp(1.5px, 0.5vw, 3.5px);
-            }
-
-            .subtitle {
-                font-size: clamp(0.7rem, 2.4vw, 0.9rem);
-                letter-spacing: clamp(0.5px, 0.2vw, 2px);
-                padding: 0 15px;
-            }
-
-            .section-title {
-                font-size: clamp(1.4rem, 6vw, 2rem);
-                letter-spacing: clamp(1.5px, 0.5vw, 5px);
-            }
-
-            .info-card, .timeline-content, .dresscode-card {
-                padding: 32px 15px;
-            }
-
-            .credit-item {
-                font-size: clamp(0.65rem, 2vw, 0.75rem);
-                letter-spacing: clamp(0.3px, 0.2vw, 1.5px);
-            }
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multy Play 2025</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Playfair+Display:wght@400;500;600;700;900&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Film Slate Opening */
+        .film-slate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: slateDisappear 0.8s ease-out 2.5s forwards;
+        }
+
+        .slate-text {
+            font-family: 'Courier New', monospace;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: #fff;
+            letter-spacing: 12px;
+            margin: 15px 0;
+            opacity: 0;
+            animation: typeIn 0.6s ease 0.3s forwards;
+        }
+
+        .slate-text:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .slate-line {
+            width: 250px;
+            height: 2px;
+            background: #fff;
+            margin: 25px 0;
+            transform: scaleX(0);
+            animation: lineExpand 0.5s ease 1.8s forwards;
+        }
+
+        @keyframes typeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes lineExpand {
+            to { transform: scaleX(1); }
+        }
+
+        @keyframes slateDisappear {
+            to { opacity: 0; pointer-events: none; }
+        }
+
+        /* Film Grain */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="4.5" numOctaves="6" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.06"/></svg>');
+            pointer-events: none;
+            z-index: 10000;
+            animation: grain 6s steps(10) infinite;
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-3%, -8%); }
+            40% { transform: translate(5%, -12%); }
+            60% { transform: translate(-7%, 10%); }
+            80% { transform: translate(8%, -5%); }
+        }
+
+        /* Bokeh */
+        .bokeh {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bokeh-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: 0.3;
+            animation: float 30s infinite ease-in-out;
+        }
+
+        .bokeh-circle:nth-child(1) {
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(120, 100, 200, 0.6), transparent);
+            top: 10%;
+            left: 5%;
+        }
+
+        .bokeh-circle:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(140, 120, 220, 0.5), transparent);
+            top: 60%;
+            right: 10%;
+            animation-delay: 5s;
+        }
+
+        .bokeh-circle:nth-child(3) {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(160, 140, 240, 0.4), transparent);
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 10s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(50px, -50px) scale(1.2); }
+            66% { transform: translate(-40px, 40px) scale(0.9); }
+        }
+
+        /* Light Beam */
+        .light-beam {
+            position: fixed;
+            top: -50%;
+            left: -10%;
+            width: 120%;
+            height: 200%;
+            background: linear-gradient(55deg, 
+                transparent 42%,
+                rgba(180, 160, 255, 0.2) 46%,
+                rgba(200, 180, 255, 0.35) 50%,
+                rgba(180, 160, 255, 0.2) 54%,
+                transparent 58%);
+            pointer-events: none;
+            z-index: 5;
+            animation: beam 5s ease-in-out 1.5s;
+            opacity: 0;
+        }
+
+        @keyframes beam {
+            0% { transform: translateX(-120%) rotate(55deg); opacity: 0; }
+            40% { opacity: 1; }
+            100% { transform: translateX(120%) rotate(55deg); opacity: 0; }
+        }
+
+        .flare {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(180, 160, 255, 0.15) 0%, transparent 45%),
+                radial-gradient(ellipse at 80% 80%, rgba(160, 140, 235, 0.12) 0%, transparent 45%);
+            pointer-events: none;
+            z-index: 2;
+            animation: flareBreath 12s ease-in-out infinite;
+        }
+
+        @keyframes flareBreath {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Scanlines */
+        .scanlines {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05), rgba(0,0,0,0.05) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.3;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            z-index: 3;
+            width: 100%;
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 4;
+            padding: 0 20px;
+        }
+
+        .year {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 20px;
+            color: rgba(180, 160, 255, 0.5);
+            margin-bottom: 40px;
+            animation: fadeInUp 1.4s ease forwards, glitch 4s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 1px); }
+            94% { transform: translate(2px, -1px); }
+        }
+
+        .main-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 15vw, 12rem);
+            font-weight: 900;
+            line-height: 0.9;
+            margin: 50px auto;
+            background: linear-gradient(180deg, #fff 0%, #e8e0ff 40%, #c8b8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: clamp(8px, 1.8vw, 16px);
+            animation: titleReveal 1.5s ease forwards 0.5s, titleFloat 6s ease-in-out infinite 3s;
+            opacity: 0;
+            filter: drop-shadow(0 20px 60px rgba(180, 160, 255, 0.8));
+            text-transform: uppercase;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: none;
+        }
+
+        @keyframes titleReveal {
+            from { opacity: 0; transform: translateY(60px) scale(0.9); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes titleFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.2rem, 4vw, 3rem);
+            font-weight: 400;
+            letter-spacing: clamp(4px, 1vw, 10px);
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+            animation: fadeInUp 1.4s ease forwards 1s, shimmer 4s ease-in-out infinite 3s;
+            opacity: 0;
+            padding: 0 15px;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            text-align: center;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { text-shadow: 0 0 20px rgba(180, 160, 255, 0.3); }
+            50% { text-shadow: 0 0 30px rgba(180, 160, 255, 0.6); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .theme {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            letter-spacing: 16px;
+            color: rgba(180, 160, 255, 0.8);
+            margin-top: 40px;
+            animation: fadeInUp 1.4s ease forwards 1.4s, pulse 3s ease-in-out infinite 3.5s;
+            opacity: 0;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .divider-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin: 60px 0;
+            animation: fadeInUp 1.4s ease forwards 1.8s;
+            opacity: 0;
+        }
+
+        .divider {
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(180, 160, 255, 0.6), transparent);
+            animation: expand 2s ease-out 2.2s;
+            transform: scaleX(0);
+        }
+
+        @keyframes expand {
+            to { transform: scaleX(1); }
+        }
+
+        .star {
+            color: rgba(180, 160, 255, 0.8);
+            font-size: 1.8rem;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.6; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+        }
+
+        .info-section {
+            padding: 140px 40px;
+            z-index: 3;
+            position: relative;
+        }
+
+        .info-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 60px;
+        }
+
+        .info-card {
+            padding: 70px 50px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(180, 160, 255, 0.15);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(80px);
+        }
+
+        .info-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .info-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .info-card:hover::after {
+            left: 100%;
+        }
+
+        .info-card:hover {
+            transform: translateY(-20px);
+            border-color: rgba(180, 160, 255, 0.4);
+            box-shadow: 0 30px 80px rgba(180, 160, 255, 0.3);
+        }
+
+        .info-label {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            letter-spacing: 6px;
+            color: rgba(180, 160, 255, 0.7);
+            margin-bottom: 25px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.7rem;
+            line-height: 2;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .info-value strong {
+            font-weight: 700;
+            color: #fff;
+            font-size: 1.9rem;
+        }
+
+        .schedule-section {
+            padding: 140px 40px;
+            z-index: 3;
+            position: relative;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            text-align: center;
+            letter-spacing: clamp(6px, 1.4vw, 14px);
+            margin-bottom: 120px;
+            background: linear-gradient(180deg, #fff 0%, #c8b8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            text-transform: uppercase;
+            padding: 0 20px;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .timeline {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, transparent, rgba(180, 160, 255, 0.5), transparent);
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(180, 160, 255, 0.4);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 70px 0;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 45px 50px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(180, 160, 255, 0.15);
+            transition: all 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-content:hover {
+            border-color: rgba(180, 160, 255, 0.4);
+            box-shadow: 0 20px 60px rgba(180, 160, 255, 0.3);
+            transform: scale(1.08) translateX(10px);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content:hover {
+            transform: scale(1.08) translateX(-10px);
+        }
+
+        .timeline-time {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: rgba(180, 160, 255, 0.9);
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .timeline-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            line-height: 2;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            width: 22px;
+            height: 22px;
+            background: rgba(180, 160, 255, 0.95);
+            border: 6px solid #000;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 40px rgba(180, 160, 255, 1);
+            z-index: 2;
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(180, 160, 255, 1); }
+            50% { box-shadow: 0 0 60px rgba(180, 160, 255, 1), 0 0 80px rgba(180, 160, 255, 0.5); }
+        }
+
+        .dresscode-section {
+            padding: 140px 40px;
+            z-index: 3;
+            position: relative;
+        }
+
+        .dresscode-card {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 90px 70px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(50px);
+            border: 2px solid rgba(180, 160, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dresscode-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dresscode-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(180, 160, 255, 0.1), transparent);
+            animation: shine 6s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .dresscode-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .dresscode-title {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 10px;
+            color: rgba(180, 160, 255, 0.7);
+            margin-bottom: 35px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .dresscode-text {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            letter-spacing: 10px;
+            background: linear-gradient(180deg, #fff 0%, #c8b8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(180, 160, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 40px rgba(180, 160, 255, 0.8)); }
+        }
+
+        .footer {
+            padding: 120px 40px 70px;
+            text-align: center;
+            z-index: 3;
+            position: relative;
+            border-top: 1px solid rgba(180, 160, 255, 0.2);
+        }
+
+        .credits {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .credit-item {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            padding: 0 20px;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.8;
+        }
+
+        .credit-item strong {
+            color: rgba(180, 160, 255, 0.7);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .slate-text {
+                font-size: clamp(1.2rem, 5vw, 2rem);
+                letter-spacing: 6px;
+                padding: 0 20px;
+                text-align: center;
+            }
+
+            .slate-line {
+                width: 160px;
+            }
+
+            .main-title {
+                font-size: clamp(3.5rem, 13vw, 6rem);
+                letter-spacing: clamp(5px, 1.2vw, 10px);
+                margin: 30px auto;
+                line-height: 0.95;
+                padding: 0 10px;
+            }
+            
+            .subtitle {
+                font-size: clamp(1.1rem, 3.8vw, 1.8rem);
+                letter-spacing: clamp(3px, 0.7vw, 6px);
+                padding: 0 25px;
+            }
+
+            .year {
+                font-size: 1rem;
+                letter-spacing: clamp(10px, 2.5vw, 16px);
+            }
+
+            .theme {
+                font-size: 1.3rem;
+                letter-spacing: clamp(8px, 2vw, 14px);
+            }
+
+            .section-title {
+                font-size: clamp(1.8rem, 7vw, 2.8rem);
+                letter-spacing: clamp(3px, 0.8vw, 8px);
+                margin-bottom: 70px;
+                padding: 0 25px;
+            }
+
+            .dresscode-text {
+                font-size: clamp(1.8rem, 6.5vw, 3.2rem);
+                letter-spacing: clamp(3px, 0.6vw, 7px);
+            }
+
+            .dresscode-title {
+                font-size: 0.95rem;
+                letter-spacing: clamp(4px, 0.8vw, 7px);
+            }
+
+            .credit-item {
+                font-size: clamp(0.75rem, 2.4vw, 0.9rem);
+                letter-spacing: clamp(1px, 0.4vw, 3px);
+                padding: 0 25px;
+                word-break: keep-all;
+                line-height: 1.7;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 45px;
+                padding: 0 20px;
+            }
+
+            .info-card {
+                padding: 45px 30px;
+            }
+
+            .info-label {
+                font-size: 0.85rem;
+                letter-spacing: 4px;
+            }
+
+            .info-value {
+                font-size: 1.35rem;
+            }
+
+            .info-value strong {
+                font-size: 1.45rem;
+            }
+            
+            .timeline::before {
+                left: 25px;
+            }
+            
+            .timeline-item {
+                flex-direction: column !important;
+                align-items: flex-start;
+                padding-left: 60px;
+                margin: 45px 0;
+            }
+            
+            .timeline-content {
+                width: 100%;
+                padding: 32px 25px;
+            }
+
+            .timeline-time {
+                font-size: 1.2rem;
+                letter-spacing: 1px;
+            }
+
+            .timeline-text {
+                font-size: 1.15rem;
+            }
+            
+            .timeline-dot {
+                left: 25px;
+                width: 15px;
+                height: 15px;
+                border: 5px solid #000;
+            }
+            
+            .dresscode-card {
+                padding: 55px 25px;
+            }
+
+            .hero {
+                padding: 60px 15px;
+                min-height: 90vh;
+            }
+
+            .divider-container {
+                gap: 18px;
+                margin: 40px auto;
+                width: fit-content;
+            }
+
+            .divider {
+                width: 55px;
+            }
+
+            .star {
+                font-size: 1.3rem;
+            }
+
+            .info-section, .schedule-section, .dresscode-section {
+                padding: 90px 20px;
+            }
+
+            .footer {
+                padding: 70px 20px 45px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slate-text {
+                font-size: clamp(1rem, 4.2vw, 1.4rem);
+                letter-spacing: 4px;
+                padding: 0 15px;
+            }
+
+            .slate-line {
+                width: 120px;
+            }
+
+            .main-title {
+                font-size: clamp(2.8rem, 11vw, 4.5rem);
+                letter-spacing: clamp(3px, 0.8vw, 6px);
+                margin: 25px auto;
+                padding: 0 10px;
+            }
+
+            .subtitle {
+                font-size: clamp(0.95rem, 3.2vw, 1.4rem);
+                letter-spacing: clamp(2px, 0.5vw, 4px);
+                padding: 0 20px;
+            }
+
+            .year {
+                font-size: 0.9rem;
+                letter-spacing: clamp(8px, 2.2vw, 12px);
+                margin-bottom: 30px;
+            }
+
+            .theme {
+                font-size: 1.1rem;
+                letter-spacing: clamp(7px, 1.8vw, 12px);
+            }
+
+            .section-title {
+                font-size: clamp(1.6rem, 6.5vw, 2.3rem);
+                letter-spacing: clamp(2px, 0.6vw, 6px);
+                margin-bottom: 55px;
+                padding: 0 20px;
+            }
+
+            .info-card {
+                padding: 38px 22px;
+            }
+
+            .info-label {
+                font-size: 0.8rem;
+                letter-spacing: 3px;
+            }
+
+            .info-value {
+                font-size: 1.2rem;
+            }
+
+            .info-value strong {
+                font-size: 1.3rem;
+            }
+
+            .timeline-item {
+                padding-left: 52px;
+                margin: 38px 0;
+            }
+
+            .timeline-content {
+                padding: 28px 18px;
+            }
+
+            .timeline-time {
+                font-size: 1rem;
+                letter-spacing: 0.5px;
+            }
+
+            .timeline-text {
+                font-size: 1.05rem;
+            }
+
+            .timeline-dot {
+                width: 13px;
+                height: 13px;
+                border: 4px solid #000;
+            }
+
+            .dresscode-card {
+                padding: 48px 18px;
+            }
+
+            .dresscode-title {
+                font-size: 0.85rem;
+                letter-spacing: clamp(3px, 0.7vw, 5px);
+                margin-bottom: 22px;
+            }
+
+            .dresscode-text {
+                font-size: clamp(1.6rem, 6vw, 2.5rem);
+                letter-spacing: clamp(2px, 0.5vw, 5px);
+            }
+
+            .credit-item {
+                font-size: clamp(0.7rem, 2.2vw, 0.8rem);
+                letter-spacing: clamp(0.5px, 0.3vw, 2px);
+                padding: 0 18px;
+            }
+
+            .divider {
+                width: 45px;
+            }
+
+            .star {
+                font-size: 1.1rem;
+            }
+
+            .hero {
+                padding: 50px 15px;
+            }
+
+            .info-section, .schedule-section, .dresscode-section {
+                padding: 75px 15px;
+            }
+
+            .footer {
+                padding: 65px 15px 38px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .main-title {
+                font-size: clamp(2rem, 9.5vw, 3rem);
+                letter-spacing: clamp(1.5px, 0.5vw, 3.5px);
+            }
+
+            .subtitle {
+                font-size: clamp(0.7rem, 2.4vw, 0.9rem);
+                letter-spacing: clamp(0.5px, 0.2vw, 2px);
+                padding: 0 15px;
+            }
+
+            .section-title {
+                font-size: clamp(1.4rem, 6vw, 2rem);
+                letter-spacing: clamp(1.5px, 0.5vw, 5px);
+            }
+
+            .info-card, .timeline-content, .dresscode-card {
+                padding: 32px 15px;
+            }
+
+            .credit-item {
+                font-size: clamp(0.65rem, 2vw, 0.75rem);
+                letter-spacing: clamp(0.3px, 0.2vw, 1.5px);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="film-slate">
-        <div class="slate-text">MULTY PLAY</div>
-        <div class="slate-line"></div>
-        <div class="slate-text">2025</div>
-    </div>
+    <div class="film-slate">
+        <div class="slate-text">MULTY PLAY</div>
+        <div class="slate-line"></div>
+        <div class="slate-text">2025</div>
+    </div>
 
-    <div class="grain"></div>
-    <div class="scanlines"></div>
-    
-    <div class="bokeh">
-        <div class="bokeh-circle"></div>
-        <div class="bokeh-circle"></div>
-        <div class="bokeh-circle"></div>
-    </div>
-    <div class="flare"></div>
-    <div class="light-beam"></div>
-    
-    <section class="hero">
-        <div class="hero-content">
-            <div class="year">2025</div>
-            <h1 class="main-title">MULTY<br>PLAY</h1>
-            <p class="subtitle">The Sequence Of Time</p>
-            <div class="divider-container">
-                <div class="divider"></div>
-                <span class="star">✦</span>
-                <div class="divider"></div>
-            </div>
-            <p class="theme">시작과 끝</p>
-        </div>
-    </section>
+    <div class="grain"></div>
+    <div class="scanlines"></div>
+    
+    <div class="bokeh">
+        <div class="bokeh-circle"></div>
+        <div class="bokeh-circle"></div>
+        <div class="bokeh-circle"></div>
+    </div>
+    <div class="flare"></div>
+    <div class="light-beam"></div>
+    
+    <section class="hero">
+        <div class="hero-content">
+            <div class="year">2025</div>
+            <h1 class="main-title">MULTY<br>PLAY</h1>
+            <p class="subtitle">The Sequence Of Time</p>
+            <div class="divider-container">
+                <div class="divider"></div>
+                <span class="star">✦</span>
+                <div class="divider"></div>
+            </div>
+            <p class="theme">시작과 끝</p>
+        </div>
+    </section>
 
-    <section class="info-section">
-        <div class="info-grid">
-            <div class="info-card">
-                <div class="info-label">Date & Time</div>
-                <div class="info-value">
-                    <strong>2025년 11월 19일</strong><br>
-                    수요일 오후 6시
-                </div>
-            </div>
-            
-            <div class="info-card">
-                <div class="info-label">Venue</div>
-                <div class="info-value">
-                    <strong>인문사회과학관</strong><br>
-                    5층 학술회의실
-                </div>
-            </div>
-            
-            <div class="info-card">
-                <div class="info-label">Theme</div>
-                <div class="info-value">
-                    <strong>연말 시상식</strong><br>
-                    Year-End Awards
-                </div>
-            </div>
-        </div>
-    </section>
+    <section class="info-section">
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-label">Date & Time</div>
+                <div class="info-value">
+                    <strong>2025년 11월 19일</strong><br>
+                    수요일 오후 6시
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-label">Venue</div>
+                <div class="info-value">
+                    <strong>인문사회과학관</strong><br>
+                    5층 학술회의실
+                </div>
+            </div>
+            
+            <div class="info-card">
+                <div class="info-label">Theme</div>
+                <div class="info-value">
+                    <strong>연말 시상식</strong><br>
+                    Year-End Awards
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <section class="schedule-section">
-        <h2 class="section-title">Schedule</h2>
-        
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">18:00 - 18:30</div>
-                    <div class="timeline-text">개회식 및 참가자 등록</div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">18:30 - 19:00</div>
-                    <div class="timeline-text">기조 발표 및 환영사</div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">19:00 - 20:00</div>
-                    <div class="timeline-text">학술 발표 세션 1<br><small style="opacity: 0.7;">시작과 끝: 영상의 서사 구조</small></div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">20:00 - 20:15</div>
-                    <div class="timeline-text">휴식 시간</div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">20:15 - 21:15</div>
-                    <div class="timeline-text">학술 발표 세션 2<br><small style="opacity: 0.7;">작품 상영 및 토론</small></div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content">
-                    <div class="timeline-time">21:15 - 21:30</div>
-                    <div class="timeline-text">시상식 및 폐회</div>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-        </div>
-    </section>
+    <section class="schedule-section">
+        <h2 class="section-title">Schedule</h2>
+        
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">18:00 - 18:30</div>
+                    <div class="timeline-text">개회식 및 참가자 등록</div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">18:30 - 19:00</div>
+                    <div class="timeline-text">기조 발표 및 환영사</div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">19:00 - 20:00</div>
+                    <div class="timeline-text">학술 발표 세션 1<br><small style="opacity: 0.7;">시작과 끝: 영상의 서사 구조</small></div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">20:00 - 20:15</div>
+                    <div class="timeline-text">휴식 시간</div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">20:15 - 21:15</div>
+                    <div class="timeline-text">학술 발표 세션 2<br><small style="opacity: 0.7;">작품 상영 및 토론</small></div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+            
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <div class="timeline-time">21:15 - 21:30</div>
+                    <div class="timeline-text">시상식 및 폐회</div>
+                </div>
+                <div class="timeline-dot"></div>
+            </div>
+        </div>
+    </section>
 
-    <section class="dresscode-section">
-        <div class="dresscode-card">
-            <div class="dresscode-content">
-                <div class="dresscode-title">Dress Code</div>
-                <div class="dresscode-text">FORMAL LOOK</div>
-            </div>
-        </div>
-    </section>
+    <section class="dresscode-section">
+        <div class="dresscode-card">
+            <div class="dresscode-content">
+                <div class="dresscode-title">Dress Code</div>
+                <div class="dresscode-text">FORMAL LOOK</div>
+            </div>
+        </div>
+    </section>
 
-    <footer class="footer">
-        <div class="credits">
-            <div class="credit-item"><strong>Organized by</strong> Department of Multimedia Student Council 'Palette'</div>
-            <div class="credit-item"><strong>2025</strong> Academic Festival</div>
-        </div>
-    </footer>
+    <footer class="footer">
+        <div class="credits">
+            <div class="credit-item"><strong>Organized by</strong> Department of Multimedia Student Council 'Palette'</div>
+            <div class="credit-item"><strong>2025</strong> Academic Festival</div>
+        </div>
+    </footer>
 
-   <script>
-        const observerOptions = {
-            threshold: 0.15, // 요소가 15% 보일 때 실행
-            rootMargin: '0px 0px -80px 0px' // 화면 하단에서 80px 위 지점을 기준으로 미리 로드
-        };
+    <script>
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -80px 0px'
+        };
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                // entry.isIntersecting이 true이면 요소가 화면에 보인다는 뜻
-                if (entry.isIntersectING) {
-                    // 'visible' 클래스를 추가하여 CSS 애니메이션 실행
-                    entry.target.classList.add('visible');
-                    // 애니메이션은 한 번만 실행하면 되므로 관찰 중지
-                    observer.unobserve(entry.target); 
-                }
-            });
-        }, observerOptions);
-
-        // 관찰할 모든 대상을 선택 (정보 카드, 타임라인 아이템, 드레스코드 카드)
-        const elementsToAnimate = document.querySelectorAll('.info-card, .timeline-item, .dresscode-card');
-        
-        // 각 요소를 관찰 시작
-        elementsToAnimate.forEach(el => {
-            observer.observe(el);
-        });
-    </script>
-</body>
-</html>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+       
